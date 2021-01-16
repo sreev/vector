@@ -114,6 +114,45 @@ impl Expression for ParseSyslogFn {
             .type_def(state)
             .fallible_unless(value::Kind::Bytes)
             .with_constraint(value::Kind::Map)
+            .with_inner_type(InnerTypeDef::Map({
+                let mut map = BTreeMap::new();
+                map.insert(
+                    "message".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes),
+                );
+                map.insert(
+                    "hostname".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                );
+                map.insert(
+                    "severity".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                );
+                map.insert(
+                    "facility".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                );
+                map.insert(
+                    "appname".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                );
+                map.insert(
+                    "msgid".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                );
+                map.insert(
+                    "timestamp".to_string(),
+                    TypeDef::new_with_kind(value::Kind::Timestamp | value::Kind::Null),
+                );
+                map.insert(
+                    "procid".to_string(),
+                    TypeDef::new_with_kind(
+                        value::Kind::Bytes | value::Kind::Integer | value::Kind::Null,
+                    ),
+                );
+
+                map
+            }))
     }
 }
 
@@ -126,17 +165,55 @@ mod tests {
     remap::test_type_def![
         value_string {
             expr: |_| ParseSyslogFn { value: Literal::from("foo").boxed() },
-            def: TypeDef { kind: value::Kind::Map, ..Default::default() },
+            def: TypeDef { kind: value::Kind::Map,
+                           inner_type_def: InnerTypeDef::Map(
+                               remap::type_def_map! [ "message": TypeDef::new_with_kind(value::Kind::Bytes),
+                                                      "hostname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "severity": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "facility": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "appname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "msgid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "timestamp": TypeDef::new_with_kind(value::Kind::Timestamp | value::Kind::Null),
+                                                      "procid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Integer | value::Kind::Null)
+                               ]
+                           ),
+                           ..Default::default() },
         }
 
         value_non_string {
             expr: |_| ParseSyslogFn { value: Literal::from(1).boxed() },
-            def: TypeDef { fallible: true, kind: value::Kind::Map, ..Default::default() },
+            def: TypeDef { fallible: true,
+                           kind: value::Kind::Map,
+                           inner_type_def: InnerTypeDef::Map(
+                               remap::type_def_map! [ "message": TypeDef::new_with_kind(value::Kind::Bytes),
+                                                      "hostname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "severity": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "facility": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "appname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "msgid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "timestamp": TypeDef::new_with_kind(value::Kind::Timestamp | value::Kind::Null),
+                                                      "procid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Integer | value::Kind::Null)
+                               ]
+                           ),
+            },
         }
 
         value_optional {
             expr: |_| ParseSyslogFn { value: Box::new(Noop) },
-            def: TypeDef { fallible: true, kind: value::Kind::Map, ..Default::default() },
+            def: TypeDef { fallible: true,
+                           kind: value::Kind::Map,
+                           inner_type_def: InnerTypeDef::Map(
+                               remap::type_def_map! [ "message": TypeDef::new_with_kind(value::Kind::Bytes),
+                                                      "hostname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "severity": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "facility": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "appname": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "msgid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Null),
+                                                      "timestamp": TypeDef::new_with_kind(value::Kind::Timestamp | value::Kind::Null),
+                                                      "procid": TypeDef::new_with_kind(value::Kind::Bytes | value::Kind::Integer | value::Kind::Null)
+                               ]
+                           ),
+            },
         }
     ];
 
@@ -146,17 +223,17 @@ mod tests {
             (
                 map![],
                 Ok(map![
-                        "severity": "notice",
-                        "facility": "user",
-                        "timestamp": chrono::Utc.ymd(2020, 3, 13).and_hms_milli(20, 45, 38, 119),
-                        "hostname": "dynamicwireless.name",
-                        "appname": "non",
-                        "procid": 2426,
-                        "msgid": "ID931",
-                        "exampleSDID@32473.iut": "3",
-                        "exampleSDID@32473.eventSource": "Application",
-                        "exampleSDID@32473.eventID": "1011",
-                        "message": "Try to override the THX port, maybe it will reboot the neural interface!",
+                    "severity": "notice",
+                    "facility": "user",
+                    "timestamp": chrono::Utc.ymd(2020, 3, 13).and_hms_milli(20, 45, 38, 119),
+                    "hostname": "dynamicwireless.name",
+                    "appname": "non",
+                    "procid": 2426,
+                    "msgid": "ID931",
+                    "exampleSDID@32473.iut": "3",
+                    "exampleSDID@32473.eventSource": "Application",
+                    "exampleSDID@32473.eventID": "1011",
+                    "message": "Try to override the THX port, maybe it will reboot the neural interface!",
                 ]),
                 ParseSyslogFn::new(Box::new(Literal::from(
                     r#"<13>1 2020-03-13T20:45:38.119Z dynamicwireless.name non 2426 ID931 [exampleSDID@32473 iut="3" eventSource= "Application" eventID="1011"] Try to override the THX port, maybe it will reboot the neural interface!"#,
@@ -165,19 +242,19 @@ mod tests {
             (
                 map![],
                 Ok(map![
-                        "message": "not much of a syslog message",
+                    "message": "not much of a syslog message",
                 ]),
                 ParseSyslogFn::new(Box::new(Literal::from(r#"not much of a syslog message"#))),
             ),
             (
                 map![],
                 Ok(map![
-                        "facility": "local0",
-                        "severity": "notice",
-                        "message": "Proxy sticky-servers started.",
-                        "timestamp": DateTime::<Utc>::from(chrono::Local.ymd(Utc::now().year(), 6, 13).and_hms_milli(16, 33, 35, 0)),
-                        "appname": "haproxy",
-                        "procid": 73411
+                    "facility": "local0",
+                    "severity": "notice",
+                    "message": "Proxy sticky-servers started.",
+                    "timestamp": DateTime::<Utc>::from(chrono::Local.ymd(Utc::now().year(), 6, 13).and_hms_milli(16, 33, 35, 0)),
+                    "appname": "haproxy",
+                    "procid": 73411
                 ]),
                 ParseSyslogFn::new(Box::new(Literal::from(
                     r#"<133>Jun 13 16:33:35 haproxy[73411]: Proxy sticky-servers started."#,
@@ -186,10 +263,10 @@ mod tests {
             (
                 map![],
                 Ok(map![
-                        "message": "I am missing a pri.",
-                        "timestamp": DateTime::<Utc>::from(chrono::Local.ymd(Utc::now().year(), 6, 13).and_hms_milli(16, 33, 35, 0)),
-                        "appname": "haproxy",
-                        "procid": 73411
+                    "message": "I am missing a pri.",
+                    "timestamp": DateTime::<Utc>::from(chrono::Local.ymd(Utc::now().year(), 6, 13).and_hms_milli(16, 33, 35, 0)),
+                    "appname": "haproxy",
+                    "procid": 73411
                 ]),
                 ParseSyslogFn::new(Box::new(Literal::from(
                     r#"Jun 13 16:33:35 haproxy[73411]: I am missing a pri."#,
