@@ -82,9 +82,9 @@ tracing-log = "0.1.0"
 tracing-tower = { git = "https://github.com/tokio-rs/tracing", rev = "f470db1b0354b368f62f9ee4d763595d16373231" }
 
 # Metrics
-metrics = "0.13.0-alpha.13"
-metrics-util = "0.4.0-alpha.10"
-metrics-tracing-context = "0.1.0-alpha.7"
+metrics = "0.13.0"
+metrics-util = "0.4.1"
+metrics-tracing-context = "0.1.0"
 
 # Aws
 rusoto_core = { version = "0.45.0", features = ["encoding"], optional = true }
