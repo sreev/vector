@@ -3671,9 +3671,9 @@ dependencies = [
 
 [[package]]
 name = "metrics-tracing-context"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "552f436c1bc4d61127fe1ef953ef78abd9119c4d7c3a5a4789edda06b39fbe3b"
+checksum = "6c1de86ffb2ca70e7ff7c9363299b6f2d76ccfbc6cdd62e73f265d1d3025ae35"
 dependencies = [
  "itoa",
  "metrics",
@@ -3685,9 +3685,9 @@ dependencies = [
 
 [[package]]
 name = "metrics-util"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9960809bf79863dbd8152da097833d355cb9f90285c128439f963370e62e15f5"
+checksum = "95aca29dc6f2378e20d3f19a2ac599fa0aae5a4ffbc7a64a5c8a5f03f6228ba7"
 dependencies = [
  "aho-corasick",
  "atomic-shim",
