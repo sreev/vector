@@ -4838,9 +4838,9 @@ dependencies = [
 
 [[package]]
 name = "quanta"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c00baf85b8a6ab6c823ac90f428643d6ef3ff847e4e2700b08706b608db7ea89"
+checksum = "7d2a052c2c109818fafdee6247e74faaf18135e0236709e6a5eb58c775758f15"
 dependencies = [
  "atomic-shim",
  "ctor",
