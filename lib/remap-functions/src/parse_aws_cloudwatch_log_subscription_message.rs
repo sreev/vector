@@ -1,7 +1,7 @@
 use crate::map;
 use remap::prelude::*;
-use value::Kind;
 use shared::aws_cloudwatch_logs_subscription::AwsCloudWatchLogsSubscriptionMessage;
+use value::Kind;
 
 #[derive(Clone, Copy, Debug)]
 pub struct ParseAwsCloudWatchLogSubscriptionMessage;
@@ -151,7 +151,6 @@ mod tests {
             fallible: true,
             kind: Kind::Map,
             inner_type_def: inner_type_def(),
-            ..Default::default()
         },
     }];
 }
