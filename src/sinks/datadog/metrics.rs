@@ -4,10 +4,11 @@ use crate::{
     http::HttpClient,
     sinks::{
         util::{
+            buffer::metrics::{DatadogMetricsState, MetricsBuffer},
             encode_namespace,
             http::{HttpBatchService, HttpRetryLogic},
-            BatchConfig, BatchSettings, MetricBuffer, PartitionBatchSink, PartitionBuffer,
-            PartitionInnerBuffer, TowerRequestConfig,
+            BatchConfig, BatchSettings, PartitionBatchSink, PartitionBuffer, PartitionInnerBuffer,
+            TowerRequestConfig,
         },
         Healthcheck, HealthcheckError, UriParseError, VectorSink,
     },
@@ -186,7 +187,7 @@ impl SinkConfig for DatadogConfig {
             HttpBatchService::new(client, move |request| ready(sink.build_request(request))),
         );
 
-        let buffer = PartitionBuffer::new(MetricBuffer::new(batch.size));
+        let buffer = PartitionBuffer::new(MetricsBuffer::<DatadogMetricsState>::new(batch.size));
 
         let svc_sink = PartitionBatchSink::new(svc, buffer, batch.timeout, cx.acker())
             .sink_map_err(|error| error!(message = "Fatal datadog metric sink error.", %error))
